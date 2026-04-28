@@ -212,23 +212,21 @@ The repo ships a [`render.yaml`](render.yaml) Blueprint and a multi-stage
 [`Dockerfile`](Dockerfile). On render.com:
 
 1. **New → Blueprint**, point it at this repository, branch `main`.
-2. Render reads `render.yaml` and creates the web service from the Dockerfile.
-3. **Wire the DB env vars in the Render dashboard.** The Blueprint declares
-   `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` as
-   `sync: false` placeholders so you point them at *any* Postgres:
-   - An **existing Render free Postgres** — open it on the dashboard and
-     copy `Hostname` / `Port` / `Database` / `Username` / `Password`.
-   - An **external free Postgres** like [Neon](https://neon.tech) (3 GB free,
-     no expiry) — paste host / port (5432) / database / role / password.
+2. Render reads `render.yaml`, provisions a free **PostgreSQL** database
+   (`certificate-db`) and builds the web service from the Dockerfile.
+3. The Blueprint injects `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`,
+   `DB_PASSWORD` from the database into the web service. `Program.cs`
+   composes them into an SSL-enabled Npgsql connection string at boot.
+4. `EnsureCreated()` materialises the schema on first run.
 
-   The Blueprint does *not* provision a Postgres because Render's free tier
-   allows only one free DB per account.
-4. `Program.cs` composes the five values into an SSL-enabled Npgsql
-   connection string at boot. `EnsureCreated()` materialises the schema on
-   first run.
+> **Free-plan caveat:** Render allows only one free Postgres per account.
+> If you already have a free Postgres on Render, either delete it first
+> *or* edit `render.yaml` to remove the `databases:` block and the
+> `fromDatabase:` references, then point the `DB_*` env vars at any
+> external Postgres (Neon, Supabase, …) via the Render dashboard.
 
 No connection strings ever live in the repo — everything is wired through
-Render's environment variables.
+Render's `fromDatabase` mechanism.
 
 ---
 
