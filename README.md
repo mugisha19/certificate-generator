@@ -206,6 +206,24 @@ with 20 mm margins, matching the downloaded PDF.
 
 ---
 
+## Deploying to Render
+
+The repo ships a [`render.yaml`](render.yaml) Blueprint and a multi-stage
+[`Dockerfile`](Dockerfile). On render.com:
+
+1. **New → Blueprint**, point it at this repository, branch `main`.
+2. Render reads `render.yaml`, provisions a free **PostgreSQL** database, and
+   builds the web service from the Dockerfile.
+3. The Blueprint injects `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`,
+   `DB_PASSWORD` from the database into the web service. `Program.cs`
+   composes them into an SSL-enabled Npgsql connection string at boot.
+4. `EnsureCreated()` materialises the schema on first run.
+
+No connection strings ever live in the repo — everything is wired through
+Render's `fromDatabase` mechanism.
+
+---
+
 ## Possible next steps
 
 - Move connection strings into User Secrets / Key Vault.
