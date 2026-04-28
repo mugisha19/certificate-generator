@@ -96,13 +96,22 @@ database. The certificate prints them as `MMMM yyyy` (e.g. **January 2026**).
 
 ## Configuration
 
-`appsettings.json` carries both database choices side by side:
+> **First-time setup:** `appsettings.json` is **gitignored** so your real
+> connection strings never reach the repo. After cloning, copy the template:
+>
+> ```bash
+> cp appsettings.Example.json appsettings.json
+> ```
+>
+> Then edit `appsettings.json` with your real passwords / hosts.
+
+`appsettings.Example.json` carries both database choices side by side:
 
 ```json
 {
   "DatabaseProvider": "Postgres",
   "ConnectionStrings": {
-    "Postgres":  "Host=localhost;Port=5432;Database=CertificateDB;Username=postgres;Password=…",
+    "Postgres":  "Host=localhost;Port=5432;Database=CertificateDB;Username=postgres;Password=YOUR_POSTGRES_PASSWORD",
     "SqlServer": "Server=localhost;Database=CertificateDB;Trusted_Connection=True;TrustServerCertificate=True;"
   }
 }

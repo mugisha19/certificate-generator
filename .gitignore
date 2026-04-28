@@ -13,6 +13,10 @@ obj/
 Thumbs.db
 
 # ─── Local-only config / secrets ─────────────────────────────────
+# appsettings.json holds your real connection strings — keep it local.
+# Bootstrap a new clone by copying appsettings.Example.json → appsettings.json.
+appsettings.json
+appsettings.Production.json
 appsettings.Local.json
 appsettings.*.local.json
 *.pfx
