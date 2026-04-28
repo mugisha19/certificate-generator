@@ -1,0 +1,128 @@
+@model IEnumerable<CertificateOfAttendance>
+@{
+    ViewData["Title"] = "Dashboard";
+    string currentStatus = ViewBag.Status ?? "";
+}
+
+<div class="page">
+    <div class="page__head">
+        <div>
+            <h1 class="page__title">Certificates</h1>
+            <p class="page__sub">Manage Good-Standing records and produce official PDF copies.</p>
+        </div>
+    </div>
+
+    <!-- ─── Stats ──────────────────────────────────────────────── -->
+    <div class="kpis">
+        <div class="kpi">
+            <div class="kpi__icon kpi__icon--primary">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 10h16M9 14h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+                <div class="kpi__num">@ViewBag.Total</div>
+                <div class="kpi__label">Total records</div>
+            </div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__icon kpi__icon--ok">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+                <div class="kpi__num">@ViewBag.ActiveCount</div>
+                <div class="kpi__label">Active students</div>
+            </div>
+        </div>
+        <div class="kpi">
+            <div class="kpi__icon kpi__icon--amber">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+                <div class="kpi__num">@Model.Count()</div>
+                <div class="kpi__label">Showing now</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Filter row ─────────────────────────────────────────── -->
+    <form method="get" class="filterbar">
+        <div class="search">
+            <span class="search__icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+            <input type="text" name="search" value="@ViewBag.Search"
+                   placeholder="Search by name or student ID…" class="search__input" />
+        </div>
+        <div class="pills" role="tablist" aria-label="Filter by status">
+            <button type="submit" name="status" value=""           class="pill @(currentStatus == "" ? "is-active" : "")">All</button>
+            <button type="submit" name="status" value="Active"     class="pill @(currentStatus == "Active" ? "is-active" : "")">Active</button>
+            <button type="submit" name="status" value="Completed"  class="pill @(currentStatus == "Completed" ? "is-active" : "")">Completed</button>
+            <button type="submit" name="status" value="Suspended"  class="pill @(currentStatus == "Suspended" ? "is-active" : "")">Suspended</button>
+        </div>
+        @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()) || !string.IsNullOrEmpty(ViewBag.Status?.ToString()))
+        {
+            <a asp-action="Index" class="btn btn--ghost btn--sm">Clear</a>
+        }
+    </form>
+
+    <!-- ─── Cards ──────────────────────────────────────────────── -->
+    @if (!Model.Any())
+    {
+        <div class="empty">
+            <div class="empty__art">
+                <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="8" width="36" height="48" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M18 18h20M18 26h20M18 34h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="46" cy="46" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="m41 46 4 4 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>No certificates yet</h3>
+            <p>Create the first record — it'll appear here as a card.</p>
+            <a asp-action="Create" class="btn btn--accent">Create first certificate</a>
+        </div>
+    }
+    else
+    {
+        <div class="cards">
+            @foreach (var cert in Model)
+            {
+                <article class="card">
+                    <div class="card__top">
+                        <div class="avatar" aria-hidden="true">
+                            @{
+                                var initials = string.Join("", (cert.StudentName ?? "·")
+                                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(s => char.ToUpper(s[0]))
+                                    .Take(2));
+                            }
+                            @initials
+                        </div>
+                        <span class="status status--@cert.Status?.ToLower()">
+                            <span class="status__dot"></span>@cert.Status
+                        </span>
+                    </div>
+                    <h3 class="card__name">@cert.StudentName</h3>
+                    <div class="card__id mono">@cert.StudentID</div>
+
+                    <dl class="card__meta">
+                        <div><dt>Faculty</dt><dd>@cert.Faculty</dd></div>
+                        <div><dt>Major</dt><dd>@cert.Major</dd></div>
+                        <div><dt>Year</dt><dd>@(string.IsNullOrWhiteSpace(cert.Year) ? "—" : cert.Year)</dd></div>
+                    </dl>
+
+                    <div class="card__actions">
+                        <a asp-action="Details" asp-route-studentId="@cert.StudentID" class="iconbtn" title="View">
+                            <svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+                        </a>
+                        <a asp-action="Edit" asp-route-studentId="@cert.StudentID" class="iconbtn" title="Edit">
+                            <svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m12.5 5.5 4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                        </a>
+                        <a asp-action="GeneratePdf" asp-route-studentId="@cert.StudentID" class="iconbtn iconbtn--accent" title="Download PDF" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M12 4v12m0 0-4-4m4 4 4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                        <form asp-action="Delete" asp-route-studentId="@cert.StudentID" method="post"
+                              onsubmit="return confirm('Delete certificate for @cert.StudentName?');" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="iconbtn iconbtn--danger" title="Delete">
+                                <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M8 10v7M12 10v7M16 10v7M6 7l1 13a1 1 0 0 0 1 .9h8a1 1 0 0 0 1-.9L18 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</div>

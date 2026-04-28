@@ -1,0 +1,38 @@
+@model CertificateOfAttendance
+@{
+    ViewData["Title"] = "New certificate";
+}
+
+<div class="page">
+    <div class="page__head">
+        <div>
+            <h1 class="page__title">New certificate</h1>
+            <p class="page__sub">Create a new Certificate of Good Standing — same one shown in the live preview after saving.</p>
+        </div>
+        <a asp-action="Index" class="btn btn--ghost">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6M9 12h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Back</span>
+        </a>
+    </div>
+
+    <div class="panel">
+        <form asp-action="Create" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="vsummary"></div>
+
+            @await Html.PartialAsync("_CertificateForm", Model)
+
+            <div class="form__actions">
+                <button type="submit" class="btn btn--accent btn--lg">
+                    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Create certificate</span>
+                </button>
+                <a asp-action="Index" class="btn btn--ghost btn--lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

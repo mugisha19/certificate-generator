@@ -1,0 +1,33 @@
+# ─── Build output ────────────────────────────────────────────────
+bin/
+obj/
+
+# ─── IDE & OS ────────────────────────────────────────────────────
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userprefs
+*.DS_Store
+Thumbs.db
+
+# ─── Local-only config / secrets ─────────────────────────────────
+appsettings.Local.json
+appsettings.*.local.json
+*.pfx
+
+# ─── Logs ────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── NuGet ───────────────────────────────────────────────────────
+*.nupkg
+**/packages/
+!**/packages/build/
+
+# ─── Coverage / test artifacts ───────────────────────────────────
+coverage/
+TestResults/
+*.coverage
+*.coveragexml

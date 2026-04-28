@@ -1,0 +1,177 @@
+@model CertificateOfAttendance
+@{
+    ViewData["Title"] = "Certificate details";
+    string studiedFrom = Model.FormattedStudiedFrom;
+    string studiedTo   = Model.FormattedStudiedTo;
+}
+
+<div class="page">
+    <div class="page__head page__head--sticky">
+        <div>
+            <h1 class="page__title">@Model.StudentName</h1>
+            <p class="page__sub">
+                <span class="mono">@Model.StudentID</span>
+                <span class="page__sub-sep">·</span>
+                <span class="status status--@Model.Status?.ToLower()">
+                    <span class="status__dot"></span>@Model.Status
+                </span>
+            </p>
+        </div>
+        <div class="page__actions">
+            <a asp-action="Index" class="btn btn--ghost">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6M9 12h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Back</span>
+            </a>
+            <a asp-action="Edit" asp-route-studentId="@Model.StudentID" class="btn btn--secondary">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m12.5 5.5 4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <span>Edit</span>
+            </a>
+            <a asp-action="PreviewPdf" asp-route-studentId="@Model.StudentID" class="btn btn--secondary" target="_blank">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+                <span>Preview</span>
+            </a>
+            <a asp-action="GeneratePdf" asp-route-studentId="@Model.StudentID" class="btn btn--accent" target="_blank">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12m0 0-4-4m4 4 4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Download PDF</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ─── PDF-viewer-style preview ───────────────────────────── -->
+    <div class="viewer">
+        <div class="viewer__bar">
+            <div class="viewer__dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="viewer__title">Certificate of Good Standing — preview</div>
+            <a class="viewer__open" asp-action="PreviewPdf" asp-route-studentId="@Model.StudentID" target="_blank">Open PDF ↗</a>
+        </div>
+        <div class="viewer__page">
+            <div class="cp">
+                <div class="cp__header">
+                    <img src="~/images/certificate/letterhead.jpg" alt="AUCA letterhead" class="cp__letterhead" />
+                    <div class="cp__contact">
+                        <p>Mobile Phone : (+250)724 796 996 / 724 474 805/ 788 473 035</p>
+                        <p>Email: <a href="mailto:registrar@auca.ac.rw">registrar@auca.ac.rw</a>, ||&nbsp; <a href="mailto:juvenal.nsengiyumva@auca.ac.rw">juvenal.nsengiyumva@auca.ac.rw</a></p>
+                    </div>
+                </div>
+                <div class="cp__rule"></div>
+
+                <div class="cp__body">
+                    <p class="cp__date">Kigali, @DateTime.Now.ToString("MMMM dd, yyyy")</p>
+                    <h2 class="cp__title">CERTIFICATE OF GOOD STANDING</h2>
+
+                    <p class="cp__intro">
+                        I, the undersigned, <strong>@Model.ApprovedBy</strong>, Director for Admissions
+                        and Academic Records of the <strong>Adventist University of Central Africa</strong>,
+                        hereby certify that:
+                    </p>
+
+                    <div class="cp__name">@Model.StudentName,</div>
+
+                    <p class="cp__line">Born on <strong>@Model.FormattedBirthDate</strong></p>
+                    <p class="cp__line">
+                        has been a regular student of this University, registered under ID No.
+                        <strong>@Model.StudentID</strong>,
+                    </p>
+                    <p class="cp__line">
+                        From <strong>@studiedFrom</strong> to <strong>@studiedTo</strong>.
+                    </p>
+
+                    <p class="cp__line">Year: <strong>@Model.Year</strong></p>
+                    <p class="cp__line">Faculty: <strong>@Model.Faculty</strong></p>
+                    <p class="cp__line">Major: <strong>@Model.Major</strong></p>
+                    <p class="cp__line">Academic year: <strong>@Model.AcademicYear</strong></p>
+                    <p class="cp__line">Validity: <strong>@Model.CertificateValidity</strong></p>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Comment))
+                    {
+                        <p class="cp__comment">@Model.Comment</p>
+                    }
+
+                    <p class="cp__purpose">
+                        This certificate is issued for any legal or administrative purpose it may serve
+                    </p>
+
+                    <div class="cp__footer">
+                        <div class="cp__sig">
+                            <img src="~/images/certificate/signature.png" alt="Signature" class="cp__sig-img" />
+                            <div class="cp__sig-line"></div>
+                            <div class="cp__sig-name">@Model.ApprovedBy</div>
+                            <div class="cp__sig-title">Director for Admissions and Academic Records</div>
+                            <div class="cp__sig-inst">Adventist University of Central Africa</div>
+                        </div>
+                        <div class="cp__qr">
+                            <img src="~/images/certificate/qr.png" alt="Verification QR code" class="cp__qr-img" />
+                            <div class="cp__qr-label">Scan to verify my Validity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Data tiles ─────────────────────────────────────────── -->
+    <div class="tiles">
+        <div class="tile">
+            <div class="tile__head">
+                <span class="tile__chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                <h3 class="tile__title">Student</h3>
+            </div>
+            <dl class="tile__list">
+                <dt>Full name</dt><dd>@Model.StudentName</dd>
+                <dt>Date of birth</dt><dd>@Model.FormattedBirthDate</dd>
+                <dt>Student ID</dt><dd class="mono">@Model.StudentID</dd>
+            </dl>
+        </div>
+
+        <div class="tile">
+            <div class="tile__head">
+                <span class="tile__chip"><svg viewBox="0 0 24 24"><path d="M3 9 12 4l9 5-9 5-9-5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M7 11v5a5 5 0 0 0 10 0v-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                <h3 class="tile__title">Academic</h3>
+            </div>
+            <dl class="tile__list">
+                <dt>Faculty</dt><dd>@Model.Faculty</dd>
+                <dt>Major</dt><dd>@Model.Major</dd>
+                <dt>Year / semester</dt><dd>@(string.IsNullOrWhiteSpace(Model.Year) ? "—" : Model.Year)</dd>
+                <dt>Academic year</dt><dd>@Model.AcademicYear</dd>
+            </dl>
+        </div>
+
+        <div class="tile">
+            <div class="tile__head">
+                <span class="tile__chip"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                <h3 class="tile__title">Period</h3>
+            </div>
+            <dl class="tile__list">
+                <dt>Studied from</dt><dd>@studiedFrom</dd>
+                <dt>Studied to</dt><dd>@studiedTo</dd>
+            </dl>
+        </div>
+
+        <div class="tile">
+            <div class="tile__head">
+                <span class="tile__chip"><svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span>
+                <h3 class="tile__title">Authorization</h3>
+            </div>
+            <dl class="tile__list">
+                <dt>Approved by</dt><dd>@Model.ApprovedBy</dd>
+                <dt>Status</dt>
+                <dd>
+                    <span class="status status--@Model.Status?.ToLower()">
+                        <span class="status__dot"></span>@Model.Status
+                    </span>
+                </dd>
+            </dl>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Comment))
+        {
+            <div class="tile tile--full">
+                <div class="tile__head">
+                    <span class="tile__chip"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-12.5 6.6L3 21l2.4-5.5A8 8 0 1 1 21 12Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+                    <h3 class="tile__title">Comment</h3>
+                </div>
+                <p class="tile__comment">@Model.Comment</p>
+            </div>
+        }
+    </div>
+</div>

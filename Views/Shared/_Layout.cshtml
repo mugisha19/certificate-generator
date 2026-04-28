@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — AUCA Certify</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar__top">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <div class="brand__logo">
+                <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <rect x="2" y="2" width="28" height="28" rx="8" fill="currentColor"/>
+                    <path d="M11 22V12l5-3 5 3v10M16 14v8M11 17h10" stroke="#0b1322" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </div>
+            <div class="brand__text">
+                <span class="brand__name">AUCA Certify</span>
+                <span class="brand__sub">Good-standing portal</span>
+            </div>
+        </a>
+        <button class="sidebar__toggle" type="button" aria-label="Collapse sidebar" data-sidebar-toggle>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+    </div>
+
+    <nav class="sidebar__nav">
+        <div class="sidebar__group-label">Workspace</div>
+        <a asp-controller="Home" asp-action="Index" class="navitem @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "is-active" : "")">
+            <span class="navitem__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 12 4l8 8M6 10v10h4v-6h4v6h4V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </span>
+            <span>Dashboard</span>
+        </a>
+        <a asp-controller="Home" asp-action="Create" class="navitem @(ViewContext.RouteData.Values["action"]?.ToString() == "Create" ? "is-active" : "")">
+            <span class="navitem__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M14 3v5h5M9 14h6M9 18h4M11 11h2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </span>
+            <span>New certificate</span>
+        </a>
+    </nav>
+
+    <div class="sidebar__bottom">
+        <div class="sidebar__chip">
+            <span class="dot dot--ok"></span>
+            <span>Service online</span>
+        </div>
+        <div class="sidebar__copy">© @DateTime.Now.Year AUCA · DAAR</div>
+    </div>
+</aside>
+
+<div class="app">
+    <header class="topbar">
+        <button class="topbar__hamburger" type="button" aria-label="Open sidebar" data-sidebar-open>
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="topbar__crumbs">
+            <span class="topbar__crumb">AUCA</span>
+            <span class="topbar__sep">/</span>
+            <span class="topbar__crumb topbar__crumb--current">@(ViewData["Title"] ?? "Dashboard")</span>
+        </div>
+        <div class="topbar__right">
+            <a asp-controller="Home" asp-action="Create" class="btn btn--accent btn--sm">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+                <span>New</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="content">
+        @if (TempData["Success"] != null)
+        {
+            <div class="flash flash--ok">
+                <span class="flash__icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4 10-10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span>@TempData["Success"]</span>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="flash flash--err">
+                <span class="flash__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v6M12 16.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <span>@TempData["Error"]</span>
+            </div>
+        }
+        @RenderBody()
+    </main>
+</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,128 @@
+@model CertificateOfAttendance
+
+<div class="form">
+    <!-- ─── Identity row ──────────────────────────────────────── -->
+    <div class="form__divider">
+        <span class="form__divider-label">01 · Student identity</span>
+    </div>
+
+    <div class="form__row form__row--3-1-1-1">
+        <div class="field">
+            <input asp-for="StudentName" class="field__input" placeholder="e.g. Tuyizere Dieudonne" autocomplete="off" />
+            <label asp-for="StudentName" class="field__label">Full name</label>
+            <span asp-validation-for="StudentName" class="field__err"></span>
+        </div>
+
+        <div class="field">
+            <input asp-for="StudentID" class="field__input mono" placeholder="e.g. 2025SEN349" autocomplete="off" />
+            <label asp-for="StudentID" class="field__label">Student ID</label>
+            <span asp-validation-for="StudentID" class="field__err"></span>
+        </div>
+
+        <div class="field field--date">
+            <input asp-for="BornDate" type="date" class="field__input" placeholder=" "
+                   max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <label asp-for="BornDate" class="field__label">Date of birth</label>
+            <span class="field__icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <span asp-validation-for="BornDate" class="field__err"></span>
+        </div>
+
+        <div class="field">
+            <select asp-for="Status" class="field__input field__select">
+                <option value="Active">Active student</option>
+                <option value="Completed">Completed program</option>
+                <option value="Suspended">Suspended record</option>
+            </select>
+            <label asp-for="Status" class="field__label">Status</label>
+            <span class="field__icon">
+                <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+        </div>
+    </div>
+
+    <!-- ─── Period row ────────────────────────────────────────── -->
+    <div class="form__divider">
+        <span class="form__divider-label">02 · Study period</span>
+        <span class="form__divider-hint">Native datepickers — the certificate prints the month and year.</span>
+    </div>
+
+    <div class="form__row form__row--3">
+        <div class="field field--date">
+            <input asp-for="StudiedFrom" type="date" class="field__input" placeholder=" " />
+            <label asp-for="StudiedFrom" class="field__label">Studied from</label>
+            <span class="field__icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <p class="field__hint">e.g. 1 January 2026 → prints <strong>January 2026</strong>.</p>
+            <span asp-validation-for="StudiedFrom" class="field__err"></span>
+        </div>
+
+        <div class="field field--date" id="studiedToGroup">
+            <input asp-for="StudiedTo" type="date" class="field__input" placeholder=" " id="studiedToInput" />
+            <label asp-for="StudiedTo" class="field__label">Studied to</label>
+            <span class="field__icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <label class="switch">
+                <input type="checkbox" id="ongoingToggle" @(Model?.StudiedTo == null ? "checked" : "") />
+                <span class="switch__track"></span>
+                <span class="switch__label">Currently studying — prints as <strong>"Date"</strong></span>
+            </label>
+            <span asp-validation-for="StudiedTo" class="field__err"></span>
+        </div>
+
+        <div class="field">
+            <select asp-for="Year" class="field__input field__select">
+                <option value="">— Select semester —</option>
+                <option value="One (Semester 1)">One (Semester 1)</option>
+                <option value="Two (Semester 2)">Two (Semester 2)</option>
+                <option value="Three (Semester 3)">Three (Semester 3)</option>
+            </select>
+            <label asp-for="Year" class="field__label">Year / semester</label>
+            <span class="field__icon">
+                <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <p class="field__hint">Three options — printed verbatim on the certificate.</p>
+        </div>
+    </div>
+
+    <!-- ─── Academic row ──────────────────────────────────────── -->
+    <div class="form__divider">
+        <span class="form__divider-label">03 · Academic record</span>
+    </div>
+
+    <div class="form__row form__row--2-2-3">
+        <div class="field">
+            <input asp-for="Faculty" class="field__input" placeholder="e.g. Information Technology" />
+            <label asp-for="Faculty" class="field__label">Faculty</label>
+            <span asp-validation-for="Faculty" class="field__err"></span>
+        </div>
+
+        <div class="field">
+            <input asp-for="Major" class="field__input" placeholder="e.g. Software Engineering" />
+            <label asp-for="Major" class="field__label">Major</label>
+            <span asp-validation-for="Major" class="field__err"></span>
+        </div>
+
+        <div class="field">
+            <input asp-for="AcademicYear" class="field__input" placeholder="e.g. 2025-2026 (September 2025-August 2026)" />
+            <label asp-for="AcademicYear" class="field__label">Academic year</label>
+            <p class="field__hint">Text inside parentheses becomes the certificate <strong>Validity</strong>.</p>
+        </div>
+    </div>
+
+    <!-- ─── Authorization row ─────────────────────────────────── -->
+    <div class="form__divider">
+        <span class="form__divider-label">04 · Authorization</span>
+    </div>
+
+    <div class="form__row form__row--1-2">
+        <div class="field">
+            <input asp-for="ApprovedBy" class="field__input" placeholder="e.g. Eng. Nsengiyumva Juvenal" />
+            <label asp-for="ApprovedBy" class="field__label">Approved by</label>
+            <p class="field__hint">Director of Admissions and Academic Records.</p>
+        </div>
+
+        <div class="field">
+            <textarea asp-for="Comment" class="field__input field__textarea" rows="3"
+                      placeholder="Optional italic note printed above the closing line of the certificate…"></textarea>
+            <label asp-for="Comment" class="field__label">Optional comment</label>
+        </div>
+    </div>
+</div>
