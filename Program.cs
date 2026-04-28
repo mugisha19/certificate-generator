@@ -84,14 +84,40 @@ app.Run();
 // ─────────────────────────────────────────────────────────────────────
 static string? BuildPostgresConnectionStringFromEnv(IConfiguration cfg)
 {
+    // 1. DATABASE_URL — Render / Heroku style postgres:// URL.
+    var url = cfg["DATABASE_URL"];
+    if (!string.IsNullOrWhiteSpace(url) &&
+        url.StartsWith("postgres", StringComparison.OrdinalIgnoreCase))
+    {
+        return ConvertPostgresUrlToNpgsql(url);
+    }
+
+    // 2. Individual DB_* env vars.
     var host = cfg["DB_HOST"];
-    if (string.IsNullOrWhiteSpace(host)) return null;
+    if (!string.IsNullOrWhiteSpace(host))
+    {
+        var port = cfg["DB_PORT"] ?? "5432";
+        var db   = cfg["DB_NAME"];
+        var user = cfg["DB_USER"];
+        var pwd  = cfg["DB_PASSWORD"];
 
-    var port = cfg["DB_PORT"] ?? "5432";
-    var db   = cfg["DB_NAME"];
-    var user = cfg["DB_USER"];
-    var pwd  = cfg["DB_PASSWORD"];
+        return $"Host={host};Port={port};Database={db};Username={user};Password={pwd};" +
+               "SSL Mode=Require;Trust Server Certificate=true";
+    }
 
-    return $"Host={host};Port={port};Database={db};Username={user};Password={pwd};" +
+    return null;
+}
+
+static string ConvertPostgresUrlToNpgsql(string url)
+{
+    // postgres://user:pass@host:port/dbname?sslmode=require → Npgsql key/value form.
+    var u = new Uri(url);
+    var creds = u.UserInfo.Split(':', 2);
+    var user  = Uri.UnescapeDataString(creds[0]);
+    var pwd   = creds.Length > 1 ? Uri.UnescapeDataString(creds[1]) : "";
+    var db    = Uri.UnescapeDataString(u.AbsolutePath.TrimStart('/'));
+    var port  = u.Port > 0 ? u.Port : 5432;
+
+    return $"Host={u.Host};Port={port};Database={db};Username={user};Password={pwd};" +
            "SSL Mode=Require;Trust Server Certificate=true";
 }

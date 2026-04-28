@@ -1,8 +1,9 @@
 # Render Blueprint — provisions a free Postgres database and a Dockerised
 # .NET 8 web service running the AUCA Certify app.
 #
-# Edit the `name` fields below if they collide with services you already own
-# in your Render account.
+# The DB connection is wired through a single DATABASE_URL env var
+# (postgres:// URL). Program.cs parses it into an SSL-enabled Npgsql
+# connection string at boot.
 
 services:
   - type: web
@@ -16,27 +17,10 @@ services:
         value: Production
       - key: DatabaseProvider
         value: Postgres
-      # Postgres credentials are wired straight from the database resource below.
-      - key: DB_HOST
+      - key: DATABASE_URL
         fromDatabase:
           name: certificate-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: certificate-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: certificate-db
-          property: database
-      - key: DB_USER
-        fromDatabase:
-          name: certificate-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: certificate-db
-          property: password
+          property: connectionString
 
 databases:
   - name: certificate-db
